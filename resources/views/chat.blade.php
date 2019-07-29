@@ -31,9 +31,16 @@
                 border-bottom:1px dashed #aaa;
             }
 
+            .title-chat{
+                min-height: 50px;
+                max-height: 50px;
+                padding:5px;
+                border:1px solid #777;
+            }
+
             .chat-show{
-                min-height: 500px;
-                max-height: 500px;
+                min-height: 450px;
+                max-height: 450px;
                 border:1px solid #777;
                 overflow-y: scroll;
             }
@@ -55,6 +62,7 @@
                 text-align: left;
             }
             .chat-form{
+                padding-top:10px;
                 min-height: 130px;
                 max-height: 130px;
                 border:1px solid #777;
@@ -77,6 +85,11 @@
                         </div>
                     </div>
                     <div class="col-md-8">
+                        <div class="title-chat">
+                            <b>Group Chat</b><br>
+                            <span id="who-is-typing">
+                            </span>
+                        </div>
                         <div class="chat-show">
                         </div>
                         <div class="chat-form">
@@ -192,7 +205,9 @@
             });
         }
 
-        chat_show("{{ Session::get('user_id') }}");
+        window.setInterval(function(){
+            chat_show("{{ Session::get('user_id') }}");
+        }, 2000);
 
         function load_users(){
             var link = "{{ url('api/get-all-users') }}";
@@ -226,6 +241,9 @@
                 }
             });
         }
-        load_users();
+
+        window.setInterval(function(){
+            load_users();
+        }, 2000);
     </script>
 </html>
