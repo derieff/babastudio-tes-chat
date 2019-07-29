@@ -11,6 +11,17 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', 'ViewController@welcome');
+
+Route::get('form-login', 'ViewController@login');
+Route::get('form-register', 'ViewController@register');
+
+Route::post('process-login', 'ProcessController@login_process');
+
+Route::post('process-register', 'ProcessController@register_process');
+
+Route::get('logout', 'ProcessController@logout_process');
