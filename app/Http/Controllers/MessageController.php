@@ -34,8 +34,10 @@ class MessageController extends Controller
 
     	$insert = Messages::insert($data);
 
-    	return Response::json(['code' => '200', 'status' => true,
-            'message' => 'Berhasil kirim pesan'
-        ], 200);
+    	// return Response::json(['code' => '200', 'status' => true,
+     //        'message' => 'Berhasil kirim pesan'
+     //    ], 200);
+        Alert::success("Berhasil Kirim Pesan");
+    	return Redirect::to('');
     }
 }

@@ -61,7 +61,7 @@
                         <div class="chat-show">
                         </div>
                         <div class="chat-form">
-                            <!-- <form action="{{ url('api/send-message') }}" method="post" enctype="multipart/form-data">  -->
+                            <form action="{{ url('api/send-message') }}" method="post" enctype="multipart/form-data"> 
                                 <input type="hidden" name="_token" id="csrf-token" value="{{ csrf_token() }}" />
                                 <input name="user_id" value="{{ Session::get('user_id') }}" type="hidden" />
                                 <div class="col-md-10">
@@ -74,7 +74,7 @@
                                         <i class="fa fa-send"></i> KIRIM
                                     </button>
                                 </div>
-                            <!-- </form> -->
+                            </form>
                         </div>
                     </div>
                 </div>
