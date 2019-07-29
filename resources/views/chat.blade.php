@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- <link href="{{ url('public/bootstrap/css/bootstrap.min.css') }}" type="text/scs" /> -->
+        <link href="{{ url('public/bootstrap/css/bootstrap.css') }}" type="text/scs" />
         <link rel = "stylesheet" href= "{{ url('public/css/bootstrap.min.css')}}">
 
         <link href="{{ url('public/font-awesome/css/font-awesome.min.css') }}" type="text/scs" /> 
@@ -14,15 +14,15 @@
 
         <style type="text/css">
             .content{
-                min-height:600px;
-                max-height:600px;
+                min-height:630px;
+                max-height:630px;
             }
             textarea{
                 resize:none;
             }
             .user-list{
-                min-height: 600px;
-                max-height: 600px;
+                min-height: 630px;
+                max-height: 630px;
                 border:1px solid #777;
                 overflow-y: scroll;
             }
@@ -37,14 +37,33 @@
                 border:1px solid #777;
                 overflow-y: scroll;
             }
+            .box-file{
+                margin:5px;
+                padding:5px;
+                border:1px solid #bbb;
+                border-radius:10px;
+                font-size:11px;
+            }
             .chat-show .list{
                 padding:5px 10px;
                 border-bottom: 1px dashed #aaa;
             }
+            .chat-show .list .textright{
+                text-align: right;
+            }
+            .chat-show .list .textleft{
+                text-align: left;
+            }
             .chat-form{
-                min-height: 100px;
-                max-height: 100px;
+                min-height: 130px;
+                max-height: 130px;
                 border:1px solid #777;
+            }
+            .col-file{
+                margin-top:10px;
+                margin-left:15px;
+                border-top:1px dashed #777;
+                padding-top:10px;
             }
         </style>
     </head>
@@ -66,13 +85,19 @@
                                 <input name="user_id" value="{{ Session::get('user_id') }}" type="hidden" />
                                 <div class="col-md-10">
                                     <textarea class="form-control" name="text" id="message" resize="none" required maxlength="200"></textarea>
-                                    <br>
-                                    <input type="file" name="file">
                                 </div>
                                 <div class="col-md-2 text-right">
                                     <button type="submit" class="btn btn-success btn-lg" id="button-kirim">
-                                        <i class="fa fa-send"></i> KIRIM
+                                        <i class="fa fa-paper-plane"></i> KIRIM
                                     </button>
+                                </div>
+                                <div class="col-md-10 col-file">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" name="title_file" placeholder="Title File">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="file" name="file" accept="image/*">
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -128,14 +153,38 @@
                 success: function(result) {
                     console.log(result);
                     $.each(result, function(i){
+                        var file_attached = "";
+                        if(result[i].file_id != null){
+                            file_attached = "<div class='box-file'>\
+                                <b>File tersedia</b> : <br>\
+                                "+result[i].title+"<br>"+result[i].file+"<br>\
+                                <a href='{{ url('public/files/stored') }}/"+result[i].file+"' download>\
+                                    Unduh <i class='fa fa-download'></i>\
+                                </a>\
+                            </div>";
+                        }
+
+                        var text_align = "";
+                        if(result[i].user_id == user_id){
+                            text_align = "text-right";
+                        }
+
                         chat_list_html = chat_list_html+"\
-                            <div class='list' onclick='delete_chat(\""+result[i].id+"\")'>\
+                            <div class='list "+text_align+"' onclick='delete_chat(\""+result[i].id+"\")'>\
                                 <b>"+result[i].name+"</b><br>\
                                 <p>"+result[i].text+"</p>\
+                                "+file_attached+"\
                             </div>\
                         ";
                     });
                     $('.chat-show').html(chat_list_html);
+
+                    // var objDiv = $('.chat-show');
+                    // objDiv.scrollTop = objDiv.scrollHeight;
+
+                    $('.chat-show').animate({
+                        scrollTop: $('.chat-show').get(0).scrollHeight}, 2000
+                    );
                 },
                 error: function (error) {
                   console.log(error);
@@ -148,7 +197,10 @@
         function load_users(){
             var link = "{{ url('api/get-all-users') }}";
 
-            var user_list_html = "<a href='{{ url('logout') }}'>Logout</a><hr>";
+            var user_list_html = "<a href='{{ url('logout') }}'>Logout</a><hr>\
+            <div class='text-center'>\
+                <b>Member List</b>\
+            </div>";
 
             $.ajax({
                 url: link,
@@ -156,9 +208,13 @@
                 success: function(result) {
                     console.log(result);
                     $.each(result, function(i){
+                        var anda = "";
+                        if(result[i].id == "{{ Session::get('user_id') }}"){
+                            anda = "<small>(Anda)</small>";
+                        }
                         user_list_html = user_list_html+"\
                             <div class='list' onclick='chat_show(\""+result[i].id+"\")'>\
-                                <b>"+result[i].name+"</b><br>\
+                                <b>"+result[i].name+" "+anda+"</b><br>\
                                 <small>"+result[i].email+"</small>\
                             </div>\
                         ";

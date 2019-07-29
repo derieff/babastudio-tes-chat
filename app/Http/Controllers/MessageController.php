@@ -20,24 +20,93 @@ class MessageController extends Controller
 {
     public function index(Request $request){
     	$select = DB::table('messages')
-    		->select('messages.*', 'users.name')
+    		->select('messages.*', 'users.name', 'files.title', 'files.file')
     		->join('users', 'users.id', 'messages.user_id')
+    		->leftJoin('files', 'files.id', 'messages.file_id')
+    		->orderBy('messages.id', 'asc')
     		->get();
     	return $select;
     }
 
     public function store(Request $request){
-    	$data = [
-    		'user_id' => $request->user_id,
-    		'text' => $request->text,
-    	];
+    	// $data = [
+    	// 	'user_id' => $request->user_id,
+    	// 	'text' => $request->text,
+    	// 	// 'created_at' => Carbon::now(),
+    	// 	// 'updated_at' => Carbon::now(),
+    	// ];
 
-    	$insert = Messages::insert($data);
+    	$message = new Messages;
+    	$message->user_id = $request->user_id;
+    	$message->text = $request->text;
+    	$message->created_at = Carbon::now();
+    	$message->updated_at = Carbon::now();
+    	$message->save();
 
-    	// return Response::json(['code' => '200', 'status' => true,
-     //        'message' => 'Berhasil kirim pesan'
-     //    ], 200);
+    	// $insert = Messages::insert($data);
+
+    	if( !empty($request->file) ){
+
+    		// $select_message = Messages::select('id')
+    		// 	->latest('id')->first();
+    		// $message_id = $select_message['id'];
+    		$message_id = $message->id;
+
+    		$file = $request->file('file');
+    		$file_extension = $file->getClientOriginalExtension();
+	        // $file_tmp = $request->file['file_tmp'];
+	        // $file_name = $request->file['file_name'];
+	        $file_name = $file->getClientOriginalName();
+	        $file_name = str_replace('.'.$file_extension, '', $file_name);
+	        $new_file_name = $this->seoName($file_name).'_'.uniqid().'.'.$file_extension;
+	        $file->move(base_path('public\files\stored'), $new_file_name);
+
+	        // $data = [
+	        // 	'message_id' => $message_id,
+	        // 	'title' => $request->title_file,
+	        // 	'file' => $new_file_name,
+	        // 	// 'created_at' => Carbon::now(),
+	        // 	// 'updated_at' => Carbon::now(),
+	        // ];
+	        $file = new Files;
+	        $file->message_id = $message_id;
+	        $file->title = $request->title_file;
+	        $file->file = $new_file_name;
+	        $file->created_at = Carbon::now();
+	        $file->updated_at = Carbon::now();
+	        $file->save();
+
+	     //    $select_file = Files::select('id')
+    		// 	->latest('id')->first();
+    		// $file_id = $select_file['id'];
+
+	        $file_id = $file->id;
+
+	        $data = [
+	        	'file_id' => $file_id,
+	        	// 'updated_at' => Carbon::now(),
+	        ];
+
+	        $update_message = Messages::where('id', $message_id)
+	        	->update($data);
+
+	        // $insert_image = Files::insert($data);
+
+    	}
+
         Alert::success("Berhasil Kirim Pesan");
     	return Redirect::to('');
+    }
+
+    public function seoName($string) {
+        //Lower case everything
+        $string = strtolower($string);
+        //Make alphanumeric (removes all other characters)
+        $string = preg_replace("/[^a-z0-9_\s-]/", "", $string);
+        //Clean up multiple dashes or whitespaces
+        $string = preg_replace("/[\s-]+/", " ", $string);
+        //Convert whitespaces and underscore to dash
+        $string = preg_replace("/[\s_]/", "-", $string);
+        return $string;
     }
 }

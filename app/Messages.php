@@ -8,8 +8,8 @@ class Messages extends Model
 {
     // protected $table = 'messages';
 
-    const CREATED_AT = 'creation_date';
-    const UPDATED_AT = 'last_update';
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     /**
      * The attributes that are mass assignable.

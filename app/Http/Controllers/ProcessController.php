@@ -18,15 +18,6 @@ use Redirect;
 
 class ProcessController extends Controller
 {
-    public function store_message(Request $request){
-    	$validator = Validator::make($request->all(), [
-    		'' => 'required|max:50',
-            'username' => 'required|max:50',
-            'password' => 'required',
-        ]);
-        $user_id = $request->user_id;
-    }
-
     public function register_process(Request $request){
     	// return "asd";
     	$name = $request->name;
@@ -51,6 +42,8 @@ class ProcessController extends Controller
     		'name' => $name,
     		'email' => $email,
     		'password' => md5($password),
+    		'created_at' => Carbon::now(),
+    		'updated_at' => Carbon::now(),
     	];
 
     	$insert = User::insert($data);

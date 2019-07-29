@@ -8,8 +8,8 @@ class Files extends Model
 {
     // protected $table = 'files';
 
-    const CREATED_AT = 'creation_date';
-    const UPDATED_AT = 'last_update';
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     /**
      * The attributes that are mass assignable.
